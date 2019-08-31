@@ -34,11 +34,20 @@ export const Form = styled.form`
   }
 `;
 
-export const SubmitButton = styled.button`
+export const SubmitButton = styled.button.attrs({
+  type: 'submit',
+})`
+  background: #7159c1;
   border: 0;
-  padding: 0px 10px 0px;
+  padding: 0 15px;
+  margin-left: 10px;
+  border-radius: 4px;
 
   display: flex;
   justify-content: center;
   align-items: center;
+
+  svg {
+    margin: 0;
+  }
 `;
