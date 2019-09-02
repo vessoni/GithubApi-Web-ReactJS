@@ -47,7 +47,7 @@ export default class Main extends Component {
       if (newRepo === '')
         throw new Error('Você precisa indicar um repositório');
 
-      const duplicateRepo = repositories.find(e => e.name === newRepo);
+      const duplicateRepo = repositories.find(repo => repo.name === newRepo);
 
       if (duplicateRepo) throw new Error('Repositório Duplicado');
 
