@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import api from '../../services/api';
 
 import Container from '../../Container/index';
-import { Loading, Owner, IssueList } from './styles';
+import { Loading, Owner, IssueList, Filter } from './styles';
 
 export default class Repository extends Component {
   static propTypes = {
@@ -18,17 +18,18 @@ export default class Repository extends Component {
   state = {
     repository: {},
     issues: [],
+    filter: 'all',
     loading: true,
   };
 
   async componentDidMount() {
-    const { match } = this.props;
+    const { match, filter } = this.props;
 
     const repoName = decodeURIComponent(match.params.repository);
 
     const [repository, issues] = await Promise.all([
       api.get(`/repos/${repoName}`),
-      api.get(`/repos/${repoName}/issues`, {
+      api.get(`/repos/${repoName}/issues?state=${filter}`, {
         params: {
           state: 'open',
           per_page: 5,
@@ -43,8 +44,12 @@ export default class Repository extends Component {
     });
   }
 
+  handleChangeFilter() {
+    // this.setState({selectValue:e.target.value});
+  }
+
   render() {
-    const { repository, issues, loading } = this.state;
+    const { repository, issues, loading, filter } = this.state;
 
     if (loading) {
       return <Loading>Carregando</Loading>;
@@ -57,6 +62,15 @@ export default class Repository extends Component {
           <h1>{repository.name}</h1>
           <p>{repository.description}</p>
         </Owner>
+
+        <Filter>
+          <select value={filter} onChange={this.handleChangeFilter}>
+            <option>Filtro</option>
+            <option>All</option>
+            <option>Open</option>
+            <option>Closed</option>
+          </select>
+        </Filter>
 
         <IssueList>
           {issues.map(issue => (

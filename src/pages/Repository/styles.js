@@ -10,6 +10,19 @@ export const Loading = styled.div`
   height: 100vh;
 `;
 
+export const Filter = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  select {
+    border: 1px solid #aba5a5;
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+`;
+
 export const Owner = styled.header`
   display: flex;
   flex-direction: column;
@@ -42,7 +55,7 @@ export const Owner = styled.header`
 
 export const IssueList = styled.ul`
   padding-top: 30px;
-  margin-top: 30px;
+  margin-top: 10px;
   border-top: 1px solid #eee;
   list-style: none;
 
