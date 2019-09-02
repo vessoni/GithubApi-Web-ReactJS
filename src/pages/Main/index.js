@@ -38,11 +38,19 @@ export default class Main extends Component {
 
   handleSubmit = async e => {
     e.preventDefault();
-    const { newRepo, repositories } = this.state;
 
     this.setState({ loading: true });
 
     try {
+      const { newRepo, repositories } = this.state;
+
+      if (newRepo === '')
+        throw new Error('Você precisa indicar um repositório');
+
+      const duplicateRepo = repositories.find(e => e.name === newRepo);
+
+      if (duplicateRepo) throw new Error('Repositório Duplicado');
+
       const response = await api.get(`repos/${newRepo}`);
 
       const data = {
