@@ -36,6 +36,7 @@ export default class Repository extends Component {
       }),
     ]);
 
+    console.log();
     this.setState({
       repository: repository.data,
       issues: issues.data,
@@ -49,8 +50,7 @@ export default class Repository extends Component {
 
     const repoName = decodeURIComponent(match.params.repository);
 
-    const [repository, issues] = await Promise.all([
-      api.get(`/repos/${repoName}`),
+    const [issues] = await Promise.all([
       api.get(`/repos/${repoName}/issues`, {
         params: {
           state: `${filter}`,
@@ -59,8 +59,8 @@ export default class Repository extends Component {
       }),
     ]);
 
+    console.log(issues);
     this.setState({
-      repository: repository.data,
       issues: issues.data,
       loading: false,
     });
