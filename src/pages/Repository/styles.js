@@ -12,9 +12,16 @@ export const Loading = styled.div`
 
 export const Filter = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   margin-top: 20px;
+  div {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #666;
+  }
   select {
     border: 1px solid #aba5a5;
     padding: 10px 15px;

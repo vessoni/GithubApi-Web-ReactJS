@@ -18,20 +18,19 @@ export default class Repository extends Component {
   state = {
     repository: {},
     issues: [],
-    filter: 'all',
     loading: true,
   };
 
   async componentDidMount() {
-    const { match, filter } = this.props;
+    const { match } = this.props;
 
     const repoName = decodeURIComponent(match.params.repository);
 
     const [repository, issues] = await Promise.all([
       api.get(`/repos/${repoName}`),
-      api.get(`/repos/${repoName}/issues?state=${filter}`, {
+      api.get(`/repos/${repoName}/issues`, {
         params: {
-          state: 'open',
+          state: 'all',
           per_page: 5,
         },
       }),
@@ -44,12 +43,31 @@ export default class Repository extends Component {
     });
   }
 
-  handleChangeFilter() {
-    // this.setState({selectValue:e.target.value});
-  }
+  handleSelectChange = async e => {
+    const filter = e.target.value;
+    const { match } = this.props;
+
+    const repoName = decodeURIComponent(match.params.repository);
+
+    const [repository, issues] = await Promise.all([
+      api.get(`/repos/${repoName}`),
+      api.get(`/repos/${repoName}/issues`, {
+        params: {
+          state: `${filter}`,
+          per_page: 5,
+        },
+      }),
+    ]);
+
+    this.setState({
+      repository: repository.data,
+      issues: issues.data,
+      loading: false,
+    });
+  };
 
   render() {
-    const { repository, issues, loading, filter } = this.state;
+    const { repository, issues, loading } = this.state;
 
     if (loading) {
       return <Loading>Carregando</Loading>;
@@ -64,11 +82,11 @@ export default class Repository extends Component {
         </Owner>
 
         <Filter>
-          <select value={filter} onChange={this.handleChangeFilter}>
-            <option>Filtro</option>
-            <option>All</option>
-            <option>Open</option>
-            <option>Closed</option>
+          <div>Filtro: </div>
+          <select onChange={this.handleSelectChange}>
+            <option value="all">All</option>
+            <option value="open">Open</option>
+            <option value="closed">Closed</option>
           </select>
         </Filter>
 
