@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import api from '../../services/api';
 
 import Container from '../../Container/index';
-import { Loading, Owner, IssueList, Filter } from './styles';
+import { Loading, Owner, IssueList, Filter, PageActions } from './styles';
 
 export default class Repository extends Component {
   static propTypes = {
@@ -19,10 +19,13 @@ export default class Repository extends Component {
     repository: {},
     issues: [],
     loading: true,
+    page: 1,
+    filter: 'all',
   };
 
   async componentDidMount() {
     const { match } = this.props;
+    const { filter } = this.state;
 
     const repoName = decodeURIComponent(match.params.repository);
 
@@ -30,13 +33,12 @@ export default class Repository extends Component {
       api.get(`/repos/${repoName}`),
       api.get(`/repos/${repoName}/issues`, {
         params: {
-          state: 'all',
+          state: filter,
           per_page: 5,
         },
       }),
     ]);
 
-    console.log();
     this.setState({
       repository: repository.data,
       issues: issues.data,
@@ -45,29 +47,44 @@ export default class Repository extends Component {
   }
 
   handleSelectChange = async e => {
-    const filter = e.target.value;
-    const { match } = this.props;
+    await this.setState({
+      filter: e.target.value,
+    });
 
+    this.apiGetResolution();
+  };
+
+  apiGetResolution = async () => {
+    const { filter, page } = this.state;
+    const { match } = this.props;
     const repoName = decodeURIComponent(match.params.repository);
 
     const [issues] = await Promise.all([
       api.get(`/repos/${repoName}/issues`, {
         params: {
-          state: `${filter}`,
+          state: filter,
           per_page: 5,
+          page,
         },
       }),
     ]);
 
-    console.log(issues);
     this.setState({
       issues: issues.data,
       loading: false,
     });
   };
 
+  handlePage = async action => {
+    const { page } = this.state;
+    await this.setState({
+      page: action === 'back' ? page - 1 : page + 1,
+    });
+    this.apiGetResolution();
+  };
+
   render() {
-    const { repository, issues, loading } = this.state;
+    const { repository, issues, loading, page } = this.state;
 
     if (loading) {
       return <Loading>Carregando</Loading>;
@@ -106,6 +123,19 @@ export default class Repository extends Component {
             </li>
           ))}
         </IssueList>
+        <PageActions>
+          <button
+            type="button"
+            disabled={page < 2}
+            onClick={() => this.handlePage('back')}
+          >
+            Anterior
+          </button>
+          <span>Página {page}</span>
+          <button type="button" onClick={() => this.handlePage('next')}>
+            Próximo
+          </button>
+        </PageActions>
       </Container>
     );
   }
